@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosotros</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        .about-section {
+            padding: 50px 0;
+        }
+
+        .about-text h1 {
+            font-weight: bold;
+        }
+
+        .feature-item {
+            text-align: center;
+        }
+
+        .feature-item img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .feature-item h5 {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .feature-item p {
+            color: #6c757d;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+     
+    </style>
+</head>
+<body>    <!-- Header y navbar -->
+    <header class="bg-light p-3 shadow-sm">
+
+
+    
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="text-primary">Ecomerc-Medix</h1>
+            <nav>
+                <a href="./index.html" class="mx-3">Home</a>
+            
+                <a href="./nosotros.html" class="mx-3">Nosotros</a>
+                <a href="./login.html" class="mx-3">Login</a>
+    
+                
+            </nav>
+     
+            <h1 class="ver-carrito" id="verCarrito">🛒<span id="cantidadCarrito" class="cantidad-carrito"></span></h1>   
+        </div>
+    
+      </header>
+      
+
+    <div class="container about-section">
+        <div class="row align-items-center">
+            <!-- Sección de texto -->
+            <p class="text-muted" style="margin-top: 10px;"><a href="index.html">Home</a>/ Nosotros</p>
+            <div class="col-md-6 about-text ">
+          
+                <h1>Nuestra historia</h1>
+                <p>Empresa 100% Mexicana, dedicada a ofrecer el servicio y distribución de venta de equipos electrónicos y accesorios y más.</p>
+                <p>Contamos con miles de usuarios y compras satisfechas, distribuimos cualquier producto a nivel nacional y otorgamos los mejores precios a nivel del mercado.</p>
+            </div>
+            
+            <!-- Sección de imagen -->
+            <div class="col-md-6 about-image d-none d-md-block p-0">
+                <img src="carritoyfon.PNG" alt="Imagen representativa" style="width: 50vw; height: 60vh; object-fit: cover;">
+            </div>
+        </div>
+
+        <!-- Sección de características -->
+        <div class="row mt-5">
+            <div class="col-md-4 feature-item">
+                <img  alt="Icono de entrega">
+                <h5>Entrega gratis y rápida!</h5>
+                <p>Servicio gratis en compras mayores a 1500$</p>
+            </div>
+            <div class="col-md-4 feature-item">
+                <img  alt="Icono de servicio técnico">
+                <h5>24/7 Servicio Técnico</h5>
+                <p>24/7 soporte técnico</p>
+            </div>
+            <div class="col-md-4 feature-item">
+                <img  alt="Icono de seguridad">
+                <h5>Compras Seguras</h5>
+                <p>Compras 100% seguras y devoluciones garantizadas</p>
+            </div>
+        </div>
+    </div>
+
+
+      <!--modal container-->
+  <div id="modal-container" class="modal-container"></div>
+
+  <script src="./js/products.js"></script>
+  <script src="./js/app.js"></script>
+  <script src="./js/carrito.js"></script>
+    <script src="./regist_serviceWorker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
