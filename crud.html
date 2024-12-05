@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="./manifest.json" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Producto</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script type="module">
+        // Importar módulos de Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, enableIndexedDbPersistence, onSnapshot } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyB94R9TtM2FAROdvKzmv19KhpskCTP8GYA",
+            authDomain: "app-final-f4cbc.firebaseapp.com",
+            databaseURL: "https://app-final-f4cbc-default-rtdb.firebaseio.com",
+            projectId: "app-final-f4cbc",
+            storageBucket: "app-final-f4cbc.appspot.com",
+            messagingSenderId: "367980041698",
+            appId: "1:367980041698:web:dd4dfb25e54a783e0355bb",
+            measurementId: "G-101CE471P5"
+        };
+
+        // Inicializar Firebase y Firestore
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Habilitar persistencia offline
+        enableIndexedDbPersistence(db)
+            .catch((err) => {
+                if (err.code === 'failed-precondition') {
+                    console.error("No se puede habilitar la persistencia: múltiples pestañas abiertas");
+                    alert("No se puede habilitar la persistencia: múltiples pestañas abiertas");
+                } else if (err.code === 'unimplemented') {
+                    console.error("La persistencia no es soportada por este navegador");
+                    alert("La persistencia no es soportada por este navegador");
+                }
+            });
+
+        // Función para comprimir imagen y convertir a Base64
+        async function comprimirImagen(file) {
+            const img = document.createElement("img");
+            img.src = URL.createObjectURL(file);
+            await new Promise(resolve => img.onload = resolve);
+            const canvas = document.createElement("canvas");
+            canvas.width = 300;
+            canvas.height = (300 / img.width) * img.height;
+            return await new pica().resize(img, canvas)
+                .then(() => canvas.toDataURL("image/jpeg", 0.8));
+        }
+
+        // Función para registrar producto
+        async function registrarProducto() {
+            const nombre = document.getElementById("nombre").value;
+            const precio = parseFloat(document.getElementById("precio").value).toFixed(2);
+            const descripcion = document.getElementById("descripcion").value;
+            const imagenFile = document.getElementById("imagen").files[0];
+
+            if (!nombre || isNaN(precio) || !imagenFile) {
+                alert("Por favor, llena todos los campos obligatorios y selecciona una imagen.");
+                return;
+            }
+
+            const imagenBase64 = await comprimirImagen(imagenFile);
+
+            try {
+                await addDoc(collection(db, "productos"), {
+                    nombre,
+                    precio,
+                    descripcion,
+                    imagenBase64
+                });
+                alert("Producto registrado exitosamente.");
+                
+                // Limpiar el formulario después de registrar
+                document.getElementById("formProducto").reset();
+                
+            } catch (error) {
+                console.error("Error al registrar producto:", error);
+                alert("Error al registrar producto: " + error.message);
+            }
+        }
+
+        // Función para cargar productos usando onSnapshot
+        function cargarProductos() {
+            const tabla = document.getElementById("tablaProductos");
+            
+            // Limpiar tabla solo una vez al inicio
+            tabla.innerHTML = ""; 
+
+            const productosRef = collection(db, "productos");
+
+            // Escuchar cambios en tiempo real
+            onSnapshot(productosRef, (snapshot) => {
+                tabla.innerHTML = ""; // Limpiar tabla cada vez que se actualiza
+
+                snapshot.forEach(doc => {
+                    const producto = doc.data();
+                    const fila = `
+                        <tr>
+                            <td>${producto.nombre}</td>
+                            <td>$${producto.precio}</td>
+                            <td>${producto.descripcion}</td>
+                            <td><img src="${producto.imagenBase64}" alt="${producto.nombre}" width="100"></td>
+                            <td><button class="btn btn-danger" onclick="eliminarProducto('${doc.id}')">Eliminar</button></td>
+                        </tr>
+                    `;
+                    tabla.innerHTML += fila;
+                });
+            });
+        }
+
+        // Función para eliminar producto
+        window.eliminarProducto = async function(id) {  // Hacer la función global
+            if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+                try {
+                    await deleteDoc(doc(db, "productos", id));
+                    alert("Producto eliminado exitosamente.");
+                } catch (error) {
+                    console.error("Error al eliminar producto:", error);
+                    alert("Error al eliminar producto: " + error.message);
+                }
+            }
+        };
+
+        document.getElementById("btnRegistrar").addEventListener("click", registrarProducto);
+        cargarProductos(); // Cargar productos al inicio
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/pica/dist/pica.min.js"></script>
+</head>
+<body class="container mt-5">
+    <h1 class="mb-4">Agregar Producto</h1>
+    <form id="formProducto" class="mb-4">
+        <div class="form-group">
+            <label for="nombre">Nombre del producto:</label>
+            <input type="text" id="nombre" class="form-control" placeholder="Ejemplo: Manzana" required>
+        </div>
+
+        <div class="form-group">
+            <label for="precio">Precio del producto:</label>
+            <input type="number" id="precio" class="form-control" placeholder="Ejemplo: 10.99" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" class="form-control" placeholder="Descripción del producto"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="imagen">Seleccionar imagen:</label>
+            <input type="file" id="imagen" class="form-control-file" accept="image/*">
+        </div>
+
+        <button type="button" id="btnRegistrar" class="btn btn-primary">Registrar Producto</button>
+    </form>
+
+    <h2>Productos Registrados</h2>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Descripción</th>
+                <th>Imagen</th>
+                <th>Acciones</th> <!-- Nueva columna para acciones -->
+            </tr>
+        </thead>
+        <tbody id="tablaProductos"></tbody>
+    </table>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Service Worker -->
+<script defer src="./regist_serviceWorker.js"></script>
+</body>
+</html>
